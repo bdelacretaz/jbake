@@ -1,7 +1,11 @@
 package org.jbake.parser;
 
-import org.pegdown.Extensions;
-import org.pegdown.PegDownProcessor;
+import java.util.ArrayList;
+import java.util.List;
+import org.commonmark.Extension;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 /**
  * Renders documents in the Markdown format.
@@ -10,87 +14,83 @@ import org.pegdown.PegDownProcessor;
  */
 public class MarkdownEngine extends MarkupEngine {
 
-    public MarkdownEngine() {
-        Class engineClass = PegDownProcessor.class;
-        assert engineClass!=null;
-    }
-
     @Override
     public void processBody(final ParserContext context) {
         String[] mdExts = context.getConfig().getStringArray("markdown.extensions");
-
-        int extensions = Extensions.NONE;
+        List<Extension> extensions = new ArrayList<>();
+        
         if (mdExts.length > 0) {
             for (int index = 0; index < mdExts.length; index++) {
                 String ext = mdExts[index];
                 if (ext.startsWith("-")) {
 		    ext = ext.substring(1);
-                    extensions=removeExtension(extensions, extensionFor(ext));
+                    // TODO extensions=removeExtension(extensions, extensionFor(ext));
                 } else {
                     if (ext.startsWith("+")) {
 		      ext = ext.substring(1);
                     }
-                    extensions=addExtension(extensions, extensionFor(ext));
+                    // TODO extensions=addExtension(extensions, extensionFor(ext));
                 }
             }
         }
         
-        long maxParsingTime = context.getConfig().getLong("markdown.maxParsingTimeInMillis", PegDownProcessor.DEFAULT_MAX_PARSING_TIME);
-        
-        PegDownProcessor pegdownProcessor = new PegDownProcessor(extensions, maxParsingTime);
-        context.setBody(pegdownProcessor.markdownToHtml(context.getBody()));
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(context.getBody());
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        context.setBody(renderer.render(document).trim());
     }
 
-    private int extensionFor(String name) {
-        int extension = Extensions.NONE;
-		if (name.equals("HARDWRAPS")) {
-			extension = Extensions.HARDWRAPS;
+    private Extension extensionFor(String name) {
+        Extension result = null;
+        
+        if (name.equals("HARDWRAPS")) {
+            // TODO
         } else if (name.equals("AUTOLINKS")) {
-            extension = Extensions.AUTOLINKS;
+            // TODO
         } else if (name.equals("FENCED_CODE_BLOCKS")) {
-            extension = Extensions.FENCED_CODE_BLOCKS;
+            // TODO
         } else if (name.equals("DEFINITIONS")) {
-            extension = Extensions.DEFINITIONS;
+            // TODO
         } else if (name.equals("ABBREVIATIONS")) {
-            extension = Extensions.ABBREVIATIONS;
+            // TODO
         } else if (name.equals("QUOTES")) {
-            extension = Extensions.QUOTES;
+            // TODO
         } else if (name.equals("SMARTS")) {
-            extension = Extensions.SMARTS;
+            // TODO
         } else if (name.equals("SMARTYPANTS")) {
-            extension = Extensions.SMARTYPANTS;
+            // TODO
         } else if (name.equals("SUPPRESS_ALL_HTML")) {
-            extension = Extensions.SUPPRESS_ALL_HTML;
+            // TODO
         } else if (name.equals("SUPPRESS_HTML_BLOCKS")) {
-            extension = Extensions.SUPPRESS_HTML_BLOCKS;
+            // TODO
         } else if (name.equals("SUPPRESS_INLINE_HTML")) {
-            extension = Extensions.SUPPRESS_INLINE_HTML;
+            // TODO
         } else if (name.equals("TABLES")) {
-            extension = Extensions.TABLES;
+            // TODO
         } else if (name.equals("WIKILINKS")) {
-            extension = Extensions.WIKILINKS;
+            // TODO
         } else if (name.equals("ANCHORLINKS")) {
-            extension = Extensions.ANCHORLINKS;
+            // TODO
         } else if (name.equals("STRIKETHROUGH")) {
-            extension = Extensions.STRIKETHROUGH;
+            // TODO
         }else if (name.equals("ATXHEADERSPACE")) {
-            extension = Extensions.ATXHEADERSPACE;
+            // TODO
         }else if (name.equals("FORCELISTITEMPARA")) {
-            extension = Extensions.FORCELISTITEMPARA;
+            // TODO
         }else if (name.equals("RELAXEDHRULES")) {
-            extension = Extensions.RELAXEDHRULES;
+            // TODO
         }else if (name.equals("TASKLISTITEMS")) {
-            extension = Extensions.TASKLISTITEMS;
+            // TODO
         }else if (name.equals("EXTANCHORLINKS")) {
-            extension = Extensions.EXTANCHORLINKS;
+            // TODO
         } else if (name.equals("ALL")) {
-            extension = Extensions.ALL;
+            // TODO
         } else if (name.equals("ALL_OPTIONALS")) {
-            extension = Extensions.ALL_OPTIONALS;
+            // TODO
         } else if (name.equals("ALL_WITH_OPTIONALS")) {
-            extension = Extensions.ALL_WITH_OPTIONALS;
+            // TODO
         }
-        return extension;
+        return result;
     }
     private int addExtension(int previousExtensions, int additionalExtension) {
     	return previousExtensions | additionalExtension;
